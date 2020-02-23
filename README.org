@@ -1,0 +1,95 @@
+#+TITLE: Ethereum Deploy
+
+#+BEGIN_QUOTE
+Скрипт для пакетного деплоя контрактов в сеть Ethereum
+#+END_QUOTE
+
+* Установка
+
+Для подключения к MySQL необходимо установить заголовочные файлы
+клиента mysql.
+
+Centos:
+
+#+BEGIN_SRC sh
+yum install mysql-devel
+#+END_SRC
+
+Debian:
+
+#+BEGIN_SRC sh
+apt install libmysqlclient-dev
+#+END_SRC
+
+Устанавливаем зависимости python:
+
+#+BEGIN_SRC sh
+pip install -r requirements.txt
+#+END_SRC
+
+* Запуск
+
+Запуск скрипта осуществляется командой:
+
+#+BEGIN_SRC sh
+python deploy.py /etc/deploy.conf
+#+END_SRC
+
+* Конфигурация
+
+Файл deploy.conf.dist необходимо скопировать в /etc/deploy.conf,
+указать параметры.
+
+Секция =[mysql]= содержит параметры подключения к базе данных. Поле
+=fileds= в этой секции задает список полей таблицы contracts, которые
+будут использоваться скриптом в качестве параметров контракта. Поля
+необходимо перечислять через запятую в том порядке, в котором их
+принимает конструктор контракта
+
+Секция =[ethereum]= содержит настройки подключения к ноде. =owner= --
+адрес аккаунта, от имени которого будет деплой, =unlockPassword= --
+пароль.
+
+Секция =[contract]= содержит пути к файлам, содержащим abi и
+bytecode. Желательно указывать полные пути.
+
+* Схема базы данных
+
+Тестовая база данных создавалась следующим запросом:
+
+#+BEGIN_SRC sql
+USE deploy
+DROP TABLE IF EXISTS `contracts`;
+CREATE TABLE contracts (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `address1` VARCHAR(100),
+    `address2` VARCHAR(100),
+    `address3` VARCHAR(100),
+    `x` BIGINT,
+    `txid` VARCHAR(100) DEFAULT "",
+    `contract_address` VARCHAR(100) DEFAULT "",
+    `status` TINYINT DEFAULT 0,
+    `message` VARCHAR(256) DEFAULT ""
+);
+#+END_SRC
+
+Столбцы =address1=, =address2=, =address3=, =x= хранят параметры
+контрактов. Этот же список должен быть задан в конфиге.
+
+Остальные столбцы хранят результат деплоя контракта
+
+- =txid= -- идентификатор транзакции деплоя;
+
+- =contract_address= -- адрес контракта;
+
+- =status= -- код результата (-1 -- ошибка, 1 -- успешно, 0 -- не
+  обработано);
+
+- =message= -- текстовое описание ошибки.
+
+* Тестовые данные
+
+#+BEGIN_SRC sql
+INSERT INTO `contracts` (`address1`, `address2`, `address3`, `x`)
+VALUES ("0x94e82a294c4EED095E03969bCa6a8Ecf3dCfAd4d", "0x653B9FF18f59cbF570aAbc66EFd67B9A20f76789", "0x0a23EAf3B7f997E4Ba98F8D316d959Ec8AB2de0b", 1000000000);
+#+END_SRC

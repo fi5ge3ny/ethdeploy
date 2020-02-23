@@ -1,0 +1,16 @@
+[mysql]
+host = localhost
+port = 3306
+user = root
+passwd = my-secret-pw
+db = deploy
+fields = address1,address2,address3,x
+
+[ethereum]
+rpc = http://<ether_node_ip>:<node_port>/
+owner = 0x0000000000000000000000000000000000000000
+unlockPassword = secretword
+
+[contract]
+abiPath = abi.json
+bytecodePath = bytecode.txt
