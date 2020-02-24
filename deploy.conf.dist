@@ -5,6 +5,7 @@ user = root
 passwd = my-secret-pw
 db = deploy
 fields = address1,address2,address3,x
+convertFields = 0,1,2
 
 [ethereum]
 rpc = http://<ether_node_ip>:<node_port>/

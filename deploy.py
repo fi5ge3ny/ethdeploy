@@ -37,15 +37,17 @@ class EthereumContractDeploy():
 
 
 class MySQLQueue():
-    def __init__(self, host, port, user, passwd, db, fields):
+    def __init__(self, host, port, user, passwd, db, fields, convertFields):
         self.host = host
         self.port = port
         self.user = user
         self.passwd = passwd
         self.db = db
         self.fields = fields
+        self.convertFields = convertFields
         self.connect_db()
         self.fetch_queue()
+        self.convert_params()
 
     def connect_db(self):
         self.db = MySQLdb.connect(
@@ -65,11 +67,17 @@ class MySQLQueue():
         self.queue = {}
         for row in c.fetchall():
             cid = row[0]
-            params = row[1:]
+            params = list(row[1:])
             self.queue[cid] = params
 
     def get_queue(self):
         return self.queue
+
+    def convert_params(self):
+        addr = list(map(int, self.convertFields.split(",")))
+        for params in self.queue.values():
+            for i in addr:
+                params[i] = web3.Web3.toChecksumAddress(params[i])
 
     def get_params(self, cid):
         return self.queue[cid]
@@ -107,7 +115,7 @@ def main():
     config.read(config_path)
 
     rpc = config["ethereum"]["rpc"]
-    owner = config["ethereum"]["owner"]
+    owner = web3.Web3.toChecksumAddress(config["ethereum"]["owner"])
     password = config["ethereum"]["unlockPassword"]
     abiPath = config["contract"]["abiPath"]
     bytecodePath = config["contract"]["bytecodePath"]
@@ -117,12 +125,13 @@ def main():
     passwd = config["mysql"]["passwd"]
     db = config["mysql"]["db"]
     fields = config["mysql"]["fields"]
+    convertFields = config["mysql"]["convertFields"]
 
     abi = json.loads(open(abiPath, "rt").read())
     bytecode = open(bytecodePath, "rt").read().strip()
 
     deploy = EthereumContractDeploy(rpc, abi, bytecode, owner, password)
-    queue = MySQLQueue(host, port, user, passwd, db, fields)
+    queue = MySQLQueue(host, port, user, passwd, db, fields, convertFields)
 
     batch_deploy(deploy, queue)
 

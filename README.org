@@ -44,7 +44,9 @@ python deploy.py /etc/deploy.conf
 =fileds= в этой секции задает список полей таблицы contracts, которые
 будут использоваться скриптом в качестве параметров контракта. Поля
 необходимо перечислять через запятую в том порядке, в котором их
-принимает конструктор контракта
+принимает конструктор контракта. =convertFields= содержит список
+индексов полей (начиная с 0) из списка fields, которые необходимо
+преобразовать к checksumed.
 
 Секция =[ethereum]= содержит настройки подключения к ноде. =owner= --
 адрес аккаунта, от имени которого будет деплой, =unlockPassword= --
@@ -69,7 +71,7 @@ CREATE TABLE contracts (
     `txid` VARCHAR(100) DEFAULT "",
     `contract_address` VARCHAR(100) DEFAULT "",
     `status` TINYINT DEFAULT 0,
-    `message` VARCHAR(256) DEFAULT ""
+    `message` VARCHAR(1000) DEFAULT ""
 );
 #+END_SRC
 
