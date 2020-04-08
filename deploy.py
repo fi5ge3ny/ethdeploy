@@ -80,7 +80,7 @@ class MySQLQueue():
         for params in self.queue.values():
             for i in addr:
                 params[i] = web3.Web3.toChecksumAddress(params[i])
-            for i in range(len(addr)):
+            for i in range(len(params)):
                 if type(params[i]) == decimal.Decimal:
                     params[i] = int(params[i])
 
