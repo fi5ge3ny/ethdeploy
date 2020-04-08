@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import configparser
+import decimal
 import json
 import logging
 import MySQLdb
@@ -78,6 +79,9 @@ class MySQLQueue():
         for params in self.queue.values():
             for i in addr:
                 params[i] = web3.Web3.toChecksumAddress(params[i])
+            for i in range(len(addr)):
+                if type(params[i]) == decimal.Decimal:
+                    params[i] = int(params[i])
 
     def get_params(self, cid):
         return self.queue[cid]
