@@ -28,6 +28,7 @@ class EthereumContractDeploy():
 
     def deploy_contract(self, params):
         logging.info("Deploy contract with parameters" + str(params))
+        print(params)
         logging.info("Unlock account")
         self.unlock_account()
         contract = self.w3.eth.contract(abi=self.abi, bytecode=self.bytecode)
@@ -106,6 +107,7 @@ def batch_deploy(deploy, queue):
             msg = str(e)
             status = -1
             address = ""
+            raise
         queue.save_result(cid, status, msg, address)
 
 
