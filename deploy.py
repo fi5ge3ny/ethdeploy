@@ -28,7 +28,7 @@ class EthereumContractDeploy():
 
     def deploy_contract(self, params):
         logging.info("Deploy contract with parameters" + str(params))
-        print(params)
+        print(list(map(type, params)))
         logging.info("Unlock account")
         self.unlock_account()
         contract = self.w3.eth.contract(abi=self.abi, bytecode=self.bytecode)
